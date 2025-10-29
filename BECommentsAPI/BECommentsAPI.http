@@ -1,0 +1,6 @@
+@BECommentsAPI_HostAddress = http://localhost:5223
+
+GET {{BECommentsAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
