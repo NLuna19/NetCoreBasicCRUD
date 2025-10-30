@@ -11,7 +11,6 @@ namespace BECommentsAPI.Models
         public required string Author { get; set; }
         [Required]
         public required string Text { get; set; }
-        [Required]
         public DateTime creationDate { get; set; }
     }
 }

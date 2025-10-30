@@ -72,15 +72,33 @@ namespace BECommentsAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Comment comment)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            //if (id != comment.Id)
+            //    return BadRequest(new { message = "El id de la ruta no coincide con el id del comentario." });
+
             try
             {
-                if (id != comment.Id)
-                {
-                    return BadRequest();
-                }
-                _context.Update(comment);
+                var existing = await _context.Comment.FindAsync(id);
+                if (existing == null)
+                    return NotFound(new { message = "Comentario no encontrado." });
+
+                // Actualizar solo las propiedades permitidas
+                existing.Title = comment.Title;
+                existing.Author = comment.Author;
+                existing.Text = comment.Text;
+                // Mantener fecha de creación tal cual a menos que se quiera permitir su modificación
+
                 await _context.SaveChangesAsync();
-                return Ok(new {message = "Comment actualizado con exito!"});
+
+                return Ok(new { message = "Comment actualizado con exito!" });
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await _context.Comment.AnyAsync(c => c.Id == id))
+                    return NotFound();
+                throw;
             }
             catch (Exception ex)
             {
