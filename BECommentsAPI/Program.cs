@@ -12,11 +12,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CorsPolicy", builder => 
-    builder.AllowAnyOrigin()
-           .AllowAnyMethod()   
-           .AllowAnyHeader()
-   );
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
 });
 
 string? defaultC = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -38,6 +41,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAngular");
 
 app.UseAuthorization();
 
